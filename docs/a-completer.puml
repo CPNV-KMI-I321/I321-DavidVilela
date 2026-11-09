@@ -1,3 +1,15 @@
 @startuml
-' TODO : produire le diagramme demandé dans le README.
+actor Client
+participant Route
+participant Controller
+participant Entity
+database SQLite
+
+Client -> Route : GET /api/pizzas/1
+Route -> Controller : get(req, res)
+Controller -> Entity : findById(1)
+Entity -> SQLite : SELECT * FROM pizzas WHERE id = ?
+SQLite --> Entity : Ligne de la pizza
+Entity --> Controller : Pizza
+Controller --> Client : 200 OK avec la pizza en JSON
 @enduml
