@@ -1,13 +1,13 @@
-# Foodtruck — Starter 1
+# Foodtruck — Starter 2
 
-Dépôt : `I321-StarterCode-1`. La branche `main` contient le starter. Ce dossier est un point de départ à compléter, pas le corrigé.
+Dépôt : `I321-StarterCode-2`. La branche `main` contient le starter. Ce dossier est un point de départ à compléter, pas le corrigé.
 Installer Node.js **24 LTS** et Git. Le cours et les consignes restent en français.
 
 ## Démarrer
 
 ```sh
-git clone https://github.com/CPNV-KMI-I321/I321-StarterCode-1.git
-cd I321-StarterCode-1
+git clone https://github.com/CPNV-KMI-I321/I321-StarterCode-2.git
+cd I321-StarterCode-2
 ```
 
 ```sh
@@ -24,21 +24,18 @@ Les chemins de base sont relatifs au dossier de l'application. Ne pas reprendre 
 
 ## À réaliser
 
-`GET /api/pizzas` est un exemple complet à lire avant de commencer.
-Les autres opérations répondent **501** tant qu'elles ne sont pas implémentées.
+Le CRUD Pizzas de l'étape 1 est fourni et doit continuer à fonctionner.
+La table ingredients et ses routes sont prêtes ; ses opérations répondent **501**.
+Utiliser les fichiers Pizzas comme exemple.
 
-1. Compléter `findById`, `create`, `update` et `remove` dans `src/entities/Pizza.js` avec du SQL paramétré.
-2. Compléter les contrôleurs correspondants dans `src/controllers/pizzasController.js`.
-3. Réutiliser `validateId`, `validatePizza` et `fail` depuis `src/validation.js`.
-4. Pour POST : répondre 201 avec la pizza et un en-tête Location. Pour DELETE : 204 sans corps.
-5. Répondre 400 si les données sont invalides et 404 si une pizza demandée n'existe pas.
-6. Produire le diagramme Client → Route → Controller → Entity → SQLite.
-
-Ne mettre aucun SQL dans les routes ou contrôleurs, ni req/res dans les entités.
-La configuration SQLite, la table pizzas, les routes, Swagger et la validation sont déjà fournis.
+1. Compléter `src/entities/Ingredient.js` : lister, consulter, créer, modifier, supprimer.
+2. Compléter `src/controllers/ingredientsController.js` et réutiliser `validateIngredient` et `validateId`.
+3. Retourner les mêmes codes HTTP que pour les pizzas : 200, 201, 204, 400 et 404.
+4. Garder les ingrédients indépendants des pizzas pour cette étape.
+5. Dessiner le diagramme de classes et le MLD des deux tables sans association.
 
 ```json
-{"name":"Margherita","description":"Classique","price":14.5}
+{"name":"Mozzarella","price":2}
 ```
 
 ## Vérifier son travail

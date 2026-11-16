@@ -6,28 +6,23 @@ export function list(req, res) {
 }
 
 export function get(req, res) {
-  const id = validateId(req.params.id);
-  const pizza = Pizza.findById(id);
+  const pizza = Pizza.findById(validateId(req.params.id));
   if (!pizza) fail(404, 'Pizza introuvable.');
   res.json(pizza);
 }
 
 export function create(req, res) {
-  const data = validatePizza(req.body);
-  const pizza = Pizza.create(data);
-  res.status(201).location(`/api/pizzas/${pizza.id}`).json(pizza);
+  const pizza = Pizza.create(validatePizza(req.body));
+  res.location(`/api/pizzas/${pizza.id}`).status(201).json(pizza);
 }
 
 export function update(req, res) {
   const id = validateId(req.params.id);
-  const data = validatePizza(req.body);
-  const pizza = Pizza.update(id, data);
-  if (!pizza) fail(404, 'Pizza introuvable.');
-  res.json(pizza);
+  if (!Pizza.findById(id)) fail(404, 'Pizza introuvable.');
+  res.json(Pizza.update(id, validatePizza(req.body)));
 }
 
 export function remove(req, res) {
-  const id = validateId(req.params.id);
-  if (!Pizza.remove(id)) fail(404, 'Pizza introuvable.');
-  res.status(204).end();
+  if (!Pizza.remove(validateId(req.params.id))) fail(404, 'Pizza introuvable.');
+  res.sendStatus(204);
 }
