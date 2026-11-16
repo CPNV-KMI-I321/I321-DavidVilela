@@ -1,3 +1,43 @@
-@startuml
-' TODO : produire le diagramme demandé dans le README.
+@startuml classes
+ title Foodtruck — Diagramme de classes métier
+ hide methods
+ class Pizza {
+   id : Integer
+   name : String
+   description : String
+   price : Number
+   imageUrl : String [0..1]
+ }
+ class Ingredient {
+   id : Integer
+   name : String
+   price : Number
+ }
+ note bottom of Ingredient
+   Les ingrédients sont indépendants des pizzas.
+   Aucune association à cette étape.
+ end note
+@enduml
+
+@startuml mld
+ title Foodtruck — Modèle logique de données
+ entity pizzas {
+   * id : INTEGER <<PK>> <<AUTOINCREMENT>>
+   --
+   * name : TEXT
+   * description : TEXT = ''
+   * price : REAL
+   imageUrl : TEXT <<NULL autorisé>>
+ }
+ entity ingredients {
+   * id : INTEGER <<PK>> <<AUTOINCREMENT>>
+   --
+   * name : TEXT
+   * price : REAL
+ }
+ legend bottom
+   * : attribut NOT NULL (id : clé primaire)
+   price >= 0 dans chaque table.
+   Aucune clé étrangère ni table d'association.
+ endlegend
 @enduml

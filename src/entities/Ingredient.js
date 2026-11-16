@@ -1,21 +1,25 @@
-import { fail } from '../validation.js';
+import { db } from '../config/database.js';
 
 export function findAll() {
-  fail(501, 'TODO : lister les ingrédients en SQL');
+  return db.prepare('SELECT * FROM ingredients ORDER BY id').all();
 }
 
 export function findById(id) {
-  fail(501, 'TODO : SELECT par identifiant');
+  return db.prepare('SELECT * FROM ingredients WHERE id = ?').get(id);
 }
 
-export function create(data) {
-  fail(501, 'TODO : INSERT paramétré');
+export function create({ name, price }) {
+  const result = db.prepare('INSERT INTO ingredients (name, price) VALUES (?, ?)')
+    .run(name, price);
+  return findById(Number(result.lastInsertRowid));
 }
 
-export function update(id, data) {
-  fail(501, 'TODO : UPDATE paramétré');
+export function update(id, { name, price }) {
+  db.prepare('UPDATE ingredients SET name = ?, price = ? WHERE id = ?')
+    .run(name, price, id);
+  return findById(id);
 }
 
 export function remove(id) {
-  fail(501, 'TODO : DELETE paramétré');
+  return db.prepare('DELETE FROM ingredients WHERE id = ?').run(id).changes > 0;
 }
