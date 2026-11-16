@@ -24,3 +24,7 @@ export function update(id, { name, description, price, imageUrl }) {
 export function remove(id) {
   return db.prepare('DELETE FROM pizzas WHERE id = ?').run(id).changes > 0;
 }
+
+export function findByName(name) {
+  return db.prepare('SELECT * FROM pizzas WHERE name = ? COLLATE NOCASE').get(name);
+}

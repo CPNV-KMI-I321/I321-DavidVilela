@@ -9,14 +9,12 @@ export function findById(id) {
 }
 
 export function create({ name, price }) {
-  const result = db.prepare('INSERT INTO ingredients (name, price) VALUES (?, ?)')
-    .run(name, price);
+  const result = db.prepare('INSERT INTO ingredients (name, price) VALUES (?, ?)').run(name, price);
   return findById(Number(result.lastInsertRowid));
 }
 
 export function update(id, { name, price }) {
-  db.prepare('UPDATE ingredients SET name = ?, price = ? WHERE id = ?')
-    .run(name, price, id);
+  db.prepare('UPDATE ingredients SET name = ?, price = ? WHERE id = ?').run(name, price, id);
   return findById(id);
 }
 

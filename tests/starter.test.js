@@ -30,9 +30,9 @@ test('le serveur, Swagger et le contrat HTTP sont disponibles', async () => {
 });
 
 
-test('le CRUD Pizzas acquis à la séance précédente fonctionne', async () => {
-  const response = await request('/api/pizzas', 'POST', { name: 'Exemple', price: 12 });
+test('le CRUD Ingrédients acquis à la séance précédente fonctionne', async () => {
+  const response = await request('/api/ingredients', 'POST', { name: 'Exemple', price: 12 });
   assert.equal(response.status, 201);
-  const pizza = await response.json();
-  assert.equal((await request(`/api/pizzas/${pizza.id}`, 'DELETE')).status, 204);
+  const ingredient = await response.json();
+  assert.equal((await request(`/api/ingredients/${ingredient.id}`, 'DELETE')).status, 204);
 });

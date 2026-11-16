@@ -1,8 +1,9 @@
 const pizza = {
-  type: 'object', required: ['name', 'price'],
+  type: 'object', required: ['name', 'price', 'ingredientIds'],
   properties: {
     id: { type: 'integer', readOnly: true },
     name: { type: 'string', minLength: 1, maxLength: 100, example: 'Margherita' },
+    ingredientIds: { type: 'array', minItems: 1, maxItems: 100, uniqueItems: true, items: { type: 'integer', minimum: 1 }, example: [1] },
     description: { type: 'string', example: 'Tomate et mozzarella' },
     price: { type: 'number', minimum: 0, example: 14.5 },
     imageUrl: { type: 'string', nullable: true, example: 'https://example.com/pizza.jpg' }
@@ -44,6 +45,6 @@ function crudPaths(resource, schema) {
 }
 
 export default {
-  openapi: '3.0.3', info: { title: 'Foodtruck API', version: '2.0.0' },
+  openapi: '3.0.3', info: { title: 'Foodtruck API', version: '3.0.0' },
   paths: { ...crudPaths('pizzas', pizza), ...crudPaths('ingredients', ingredient) }
 };

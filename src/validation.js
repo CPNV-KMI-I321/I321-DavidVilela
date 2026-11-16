@@ -35,3 +35,12 @@ export function validatePizza(body) {
   }
   return { name: name.trim(), description, price, imageUrl };
 }
+
+
+export function validateIngredientIds(ids) {
+  if (!Array.isArray(ids) || ids.length === 0 || ids.length > 100 ||
+      ids.some(id => !Number.isSafeInteger(id) || id < 1) || new Set(ids).size !== ids.length) {
+    fail(400, 'ingredientIds doit contenir entre 1 et 100 identifiants entiers positifs distincts.');
+  }
+  return ids;
+}

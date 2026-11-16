@@ -1,13 +1,13 @@
-# Foodtruck — Starter 2
+# Foodtruck — Starter 3
 
-Dépôt : `I321-StarterCode-2`. La branche `main` contient le starter. Ce dossier est un point de départ à compléter, pas le corrigé.
+Dépôt : `I321-StarterCode-3`. La branche `main` contient le starter. Ce dossier est un point de départ à compléter, pas le corrigé.
 Installer Node.js **24 LTS** et Git. Le cours et les consignes restent en français.
 
 ## Démarrer
 
 ```sh
-git clone https://github.com/CPNV-KMI-I321/I321-StarterCode-2.git
-cd I321-StarterCode-2
+git clone https://github.com/CPNV-KMI-I321/I321-StarterCode-3.git
+cd I321-StarterCode-3
 ```
 
 ```sh
@@ -24,18 +24,26 @@ Les chemins de base sont relatifs au dossier de l'application. Ne pas reprendre 
 
 ## À réaliser
 
-Le CRUD Pizzas de l'étape 1 est fourni et doit continuer à fonctionner.
-La table ingredients et ses routes sont prêtes ; ses opérations répondent **501**.
-Utiliser les fichiers Pizzas comme exemple.
+Le monolithe de l'étape 2 fonctionne. Les deux ressources sont encore indépendantes.
+Les fichiers Services et PizzaComposition sont des squelettes : ils ne sont pas encore appelés par les contrôleurs.
+Leur code TODO répondra 501 une fois branché. La validation de `ingredientIds` et le contrat Swagger cible sont fournis.
 
-1. Compléter `src/entities/Ingredient.js` : lister, consulter, créer, modifier, supprimer.
-2. Compléter `src/controllers/ingredientsController.js` et réutiliser `validateIngredient` et `validateId`.
-3. Retourner les mêmes codes HTTP que pour les pizzas : 200, 201, 204, 400 et 404.
-4. Garder les ingrédients indépendants des pizzas pour cette étape.
-5. Dessiner le diagramme de classes et le MLD des deux tables sans association.
+1. Déplacer la logique des contrôleurs dans `src/services/pizzasService.js` et `ingredientsService.js`.
+2. Faire déléguer les contrôleurs aux services ; conserver req/res dans les contrôleurs.
+3. Ajouter un nom de pizza unique (index SQLite NOCASE).
+4. Créer la table `pizza_ingredients` : clé primaire composée, clés étrangères et suppression en cascade côté pizza.
+5. Compléter `src/entities/PizzaComposition.js` et `Pizza.findByName`.
+6. Une pizza doit contenir au moins un ingrédient ; tous les identifiants doivent exister et être distincts.
+7. Créer et modifier la pizza et sa composition dans une transaction SQLite synchrone : BEGIN IMMEDIATE, COMMIT ou ROLLBACK.
+8. Une suppression d'ingrédient utilisé doit répondre 409 ; un nom de pizza déjà utilisé aussi.
+9. Produire un MCD/MLD N à N et la séquence de création avec ses cas d'erreur.
+
+Les services doivent aussi restituer `ingredientIds` dans les lectures de pizzas.
+Créer les ingrédients avant les pizzas. Le prix reste saisi, sans calcul automatique.
+Utiliser la nouvelle base `data/starter-3.sqlite` : les anciennes pizzas n'avaient pas de composition.
 
 ```json
-{"name":"Mozzarella","price":2}
+{"name":"Margherita","price":14.5,"ingredientIds":[1]}
 ```
 
 ## Vérifier son travail

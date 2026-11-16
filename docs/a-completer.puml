@@ -1,43 +1,105 @@
-@startuml classes
- title Foodtruck — Diagramme de classes métier
- hide methods
- class Pizza {
-   id : Integer
-   name : String
-   description : String
-   price : Number
-   imageUrl : String [0..1]
+@startuml mcd
+ title Foodtruck — MCD
+ entity Pizza {
+   * id
+   --
+   name (unique, sans distinction de casse)
+   description
+   price
+   imageUrl (facultatif)
  }
- class Ingredient {
-   id : Integer
-   name : String
-   price : Number
+ entity Ingredient {
+   * id
+   --
+   name
+   price
  }
- note bottom of Ingredient
-   Les ingrédients sont indépendants des pizzas.
-   Aucune association à cette étape.
+ Pizza "0..*" -- "1..*" Ingredient : contient
+ note bottom of Pizza
+   Une pizza contient au moins un ingrédient.
+   Un ingrédient entre dans zéro à plusieurs pizzas.
+   Le prix est saisi, sans calcul automatique.
  end note
 @enduml
 
 @startuml mld
- title Foodtruck — Modèle logique de données
+ title Foodtruck — MLD
  entity pizzas {
-   * id : INTEGER <<PK>> <<AUTOINCREMENT>>
+   * id : INTEGER <<PK, AUTOINCREMENT>>
    --
-   * name : TEXT
+   * name : TEXT <<UNIQUE NOCASE>>
    * description : TEXT = ''
-   * price : REAL
-   imageUrl : TEXT <<NULL autorisé>>
+   * price : REAL <<CHECK >= 0>>
+   imageUrl : TEXT
  }
  entity ingredients {
-   * id : INTEGER <<PK>> <<AUTOINCREMENT>>
+   * id : INTEGER <<PK, AUTOINCREMENT>>
    --
    * name : TEXT
-   * price : REAL
+   * price : REAL <<CHECK >= 0>>
  }
- legend bottom
-   * : attribut NOT NULL (id : clé primaire)
-   price >= 0 dans chaque table.
-   Aucune clé étrangère ni table d'association.
- endlegend
+ entity pizza_ingredients {
+   * pizza_id : INTEGER <<PK, FK>>
+   * ingredient_id : INTEGER <<PK, FK>>
+ }
+ pizzas ||--o{ pizza_ingredients
+ ingredients ||--o{ pizza_ingredients
+ note bottom of pizza_ingredients
+   Clé primaire composée : (pizza_id, ingredient_id).
+   Suppression pizza : ON DELETE CASCADE.
+   Suppression ingrédient : ON DELETE RESTRICT.
+   La composition non vide est garantie par le service.
+   * : attribut obligatoire ; aucune quantité stockée.
+ end note
+@enduml
+
+@startuml creation
+ title Foodtruck — Création d'une pizza
+ actor Client
+ participant Route
+ participant Controller
+ participant pizzasService as Service
+ participant ingredientsService as Ingredients
+ participant "Entités Pizza / Ingredient / PizzaComposition" as Entity
+ database SQLite
+ Client -> Route : POST /api/pizzas (JSON)
+ Route -> Controller : create(req, res)
+ Controller -> Service : create(body)
+ Service -> Service : validatePizza / validateIngredientIds
+ alt Données invalides, composition vide ou doublons d'identifiants
+   Service --> Controller : erreur 400
+   Controller --> Client : 400 via le gestionnaire d'erreurs
+ else Données valides
+   Service -> SQLite : BEGIN IMMEDIATE
+   Service -> Ingredients : ensureExist(ids)
+   Ingredients -> Entity : findById(id) pour chaque ingrédient
+   Entity -> SQLite : SELECT paramétrés
+   SQLite --> Entity : résultats
+   Entity --> Ingredients : ingrédients
+   Ingredients --> Service : résultat de validation
+   Service -> Entity : findByName(name), NOCASE
+   Entity -> SQLite : SELECT paramétré
+   SQLite --> Entity : pizza éventuelle
+   Entity --> Service : résultat
+   alt Ingrédient inexistant ou nom déjà utilisé
+     Service -> SQLite : ROLLBACK
+     Service --> Controller : erreur 400 (ingrédient) ou 409 (nom)
+     Controller --> Client : 400 ou 409 via le gestionnaire d'erreurs
+   else Règles métier respectées
+     Service -> Entity : create(data), replace(pizza.id, ids)
+     Entity -> SQLite : INSERT pizza et composition
+     alt Échec SQLite pendant les écritures
+       SQLite --> Entity : erreur
+       Entity --> Service : erreur
+       Service -> SQLite : ROLLBACK
+       Service --> Controller : erreur
+       Controller --> Client : 500 via le gestionnaire d'erreurs
+     else Écritures réussies
+       Entity --> Service : pizza avec ingredientIds
+       Service -> SQLite : COMMIT
+       Service --> Controller : pizza avec ingredientIds
+       Controller --> Client : 201 JSON + Location
+     end
+   end
+ end
 @enduml
